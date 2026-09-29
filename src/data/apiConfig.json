@@ -1,0 +1,182 @@
+{
+  "mode": "live",
+  "baseUrl": "https://dispatch-api.enterprise.corp/v1",
+  "authToken": "sec_tok_9283748234abcf",
+  "activeDispatchType": "pickup",
+  "lastSaved": "2026-09-29T15:43:02.280Z",
+  "endpoints": [
+    {
+      "id": "dispatch-active",
+      "name": "Active Dispatch Info",
+      "method": "GET",
+      "defaultPath": "/dispatch/active",
+      "configuredPath": "/dispatch/active",
+      "description": "Returns current shift type (pickup: login to office vs drop: logout from office), office facility coordinates, and state metadata.",
+      "responseSchema": {
+        "dispatchType": "pickup",
+        "shiftName": "General Morning Login (09:00 AM)",
+        "office": {
+          "id": "OFFICE_CORP_HYD",
+          "name": "Corporate Facility Hyderabad",
+          "code": "HQ-HYD",
+          "lat": 17.4648,
+          "lng": 78.361,
+          "address": "19th Floor, Block A, Aparna Technopolis, Kondapur, Hyderabad 500084"
+        },
+        "totalEmployeesScheduled": 100,
+        "totalCabsDispatched": 32
+      }
+    },
+    {
+      "id": "cabs-telemetry",
+      "name": "Live Cab Telemetry & GPS",
+      "method": "GET",
+      "defaultPath": "/cabs/telemetry",
+      "configuredPath": "/cabs/telemetry",
+      "description": "Polls real-time GPS coordinates of active cabs, vehicle registration, driver details, heading, and distance metrics.",
+      "responseSchema": {
+        "timestamp": "2026-09-29T14:00:00Z",
+        "cabs": [
+          {
+            "routeNumber": "R-01",
+            "vehicleNumber": "TS 09 UB 4521",
+            "cabModel": "Maruti Ertiga White",
+            "driver": {
+              "name": "Ramesh Goud",
+              "phone": "+91 98490 10137",
+              "rating": 4.85
+            },
+            "currentStatus": "in_transit",
+            "currentLocation": {
+              "lat": 17.4712,
+              "lng": 78.3635,
+              "headingDeg": 145,
+              "lastUpdated": "2s ago"
+            },
+            "nextStop": {
+              "employeeId": "EMP-1002",
+              "employeeName": "Priya Reddy",
+              "type": "pickup",
+              "etaMinutes": 5,
+              "targetLat": 17.4682,
+              "targetLng": 78.3615
+            },
+            "metrics": {
+              "coveredKm": 2.8,
+              "remainingKm": 4.6,
+              "totalEstimatedKm": 7.4
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "routes-list",
+      "name": "Routes & Passenger Roster",
+      "method": "GET",
+      "defaultPath": "/routes",
+      "configuredPath": "/routes",
+      "description": "Fetches complete list of cab routes with ordered passenger stops (max 3 passengers/cab) and residential coordinates.",
+      "responseSchema": {
+        "routes": [
+          {
+            "routeNumber": "R-01",
+            "vehicleNumber": "TS 09 UB 4521",
+            "passengers": [
+              {
+                "employeeId": "EMP-1001",
+                "name": "Aarav Sharma",
+                "gender": "male",
+                "stopSequence": 1,
+                "lat": 17.4682,
+                "lng": 78.3615,
+                "address": "Aparna Luxor Park, Kondapur",
+                "boardingStatus": "boarded"
+              },
+              {
+                "employeeId": "EMP-1002",
+                "name": "Priya Reddy",
+                "gender": "female",
+                "stopSequence": 2,
+                "lat": 17.4682,
+                "lng": 78.3615,
+                "address": "Aparna Luxor Park, Kondapur",
+                "boardingStatus": "awaiting_cab"
+              }
+            ]
+          }
+        ],
+        "unassignedEmployees": [
+          {
+            "employeeId": "EMP-1099",
+            "name": "Vikram Joshi",
+            "gender": "male",
+            "lat": 17.4412,
+            "lng": 78.4721,
+            "address": "Begumpet Officers Colony"
+          }
+        ]
+      }
+    },
+    {
+      "id": "otp-verify",
+      "name": "Verify Boarding / Deboarding OTP",
+      "method": "POST",
+      "defaultPath": "/otp/verify",
+      "configuredPath": "/otp/verify",
+      "description": "Verifies employee OTP when boarding cab during pickup or when deboarding cab during drop off.",
+      "requestSchema": {
+        "employeeId": "EMP-1002",
+        "routeNumber": "R-01",
+        "action": "pickup_boarding",
+        "otpCode": "4821",
+        "verifiedAtLat": 17.4682,
+        "verifiedAtLng": 78.3615
+      },
+      "responseSchema": {
+        "success": true,
+        "message": "OTP verified successfully. Passenger marked as boarded.",
+        "newStatus": "boarded",
+        "timestamp": "2026-09-29T14:02:11Z"
+      }
+    },
+    {
+      "id": "route-assign",
+      "name": "Manual Route Allocation",
+      "method": "PATCH",
+      "defaultPath": "/routes/assign",
+      "configuredPath": "/routes/assign",
+      "description": "Allows transport team to assign or reassign an employee to a cab route.",
+      "requestSchema": {
+        "employeeId": "EMP-1099",
+        "targetRouteNumber": "R-05",
+        "stopSequence": 2
+      },
+      "responseSchema": {
+        "success": true,
+        "employeeId": "EMP-1099",
+        "routeNumber": "R-05",
+        "currentCabOccupancy": 3
+      }
+    },
+    {
+      "id": "config-sync",
+      "name": "Configuration Remote Storage",
+      "method": "POST",
+      "defaultPath": "/config",
+      "configuredPath": "/config",
+      "description": "Database endpoint used to persist and load these system configurations from backend DB.",
+      "requestSchema": {
+        "mode": "live",
+        "baseUrl": "https://dispatch-api.enterprise.corp/v1",
+        "authToken": "...",
+        "endpoints": []
+      },
+      "responseSchema": {
+        "saved": true,
+        "version": "1.0",
+        "updatedAt": "2026-09-29T14:05:00Z"
+      }
+    }
+  ]
+}
